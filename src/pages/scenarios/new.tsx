@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { scenarioService } from '../../services/scenarioService'
 import { useAuth } from '../../contexts/AuthContext'
+import { Problem } from '../../types/scenario'
 
 // 新しい設計のスキーマ
 const scenarioFormSchema = z.object({
@@ -168,7 +169,7 @@ export default function NewScenarioPage() {
     control: Control<ScenarioFormType>
     problemIndex: number
     problemFields: Problem[]
-    watch: UseFormWatch<ScenarioFormData>
+    watch: UseFormWatch<ScenarioFormType>
   }) => {
     const { field } = useController({
       control,

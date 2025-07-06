@@ -100,7 +100,7 @@ export default function GameConsolePage() {
 
   // 回答提出処理
   const handleSubmitAnswer = async (problem: Problem) => {
-    if (!problem || !team) return
+    if (!problem || !team || !selectedScenario) return
 
     // 既に回答済みの問題かチェック
     if (teamService.isProblemCompletedForScenario(team, selectedScenario.id, problem.id)) {
@@ -119,14 +119,12 @@ export default function GameConsolePage() {
       await teamService.markProblemCompleted(team.id, selectedScenario.id, problem.id, problem.score)
 
       // シナリオの全問題が完了した場合、シナリオも完了にマーク
-      if (selectedScenario) {
-        const allProblemsCompleted = selectedScenario.problems.every(p => 
-          teamService.isProblemCompletedForScenario(team, selectedScenario.id, p.id) || p.id === problem.id
-        )
-        
-        if (allProblemsCompleted && !team.completedScenarios.includes(selectedScenario.id)) {
-          await teamService.markScenarioCompleted(team.id, selectedScenario.id)
-        }
+      const allProblemsCompleted = selectedScenario.problems.every(p => 
+        teamService.isProblemCompletedForScenario(team, selectedScenario.id, p.id) || p.id === problem.id
+      )
+      
+      if (allProblemsCompleted && !team.completedScenarios.includes(selectedScenario.id)) {
+        await teamService.markScenarioCompleted(team.id, selectedScenario.id)
       }
       
       // チーム情報を再読み込み
