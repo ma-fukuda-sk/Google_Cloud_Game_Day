@@ -30,7 +30,8 @@ export default function NewEventPage() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
+    control
   } = useForm<EventSchemaType>({
     resolver: zodResolver(eventSchema),
     defaultValues: {

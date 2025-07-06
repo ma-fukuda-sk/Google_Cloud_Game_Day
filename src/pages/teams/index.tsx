@@ -320,11 +320,12 @@ export default function TeamsPage() {
         </div>
 
         {/* チーム追加モーダル */}
-        {showAddModal && (
+        {showAddModal && events.length > 0 && (
           <AddTeamModal
-            events={events}
+            isOpen={showAddModal}
+            event={events[0]}
             onClose={() => setShowAddModal(false)}
-            onSuccess={() => {
+            onTeamAdded={() => {
               setShowAddModal(false)
               loadData()
             }}
@@ -334,10 +335,10 @@ export default function TeamsPage() {
         {/* チーム編集モーダル */}
         {editingTeam && (
           <EditTeamModal
+            isOpen={!!editingTeam}
             team={editingTeam}
-            events={events}
             onClose={() => setEditingTeam(null)}
-            onSuccess={() => {
+            onTeamUpdated={() => {
               setEditingTeam(null)
               loadData()
             }}
