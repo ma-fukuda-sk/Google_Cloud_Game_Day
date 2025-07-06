@@ -10,6 +10,8 @@ Google CloudベースのGame Day管理システム：シナリオ・チーム・
 # 🕹️ GameDay Console
 > GCPベースで構築されたGame Dayイベントの管理・実行プラットフォーム
 
+🌐 **Live Demo:** https://google-cloud-game-day.vercel.app/
+
 <!-- ![License](https://img.shields.io/github/license/your-org-name/gameday-console) -->
 <!-- ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg) -->
 
