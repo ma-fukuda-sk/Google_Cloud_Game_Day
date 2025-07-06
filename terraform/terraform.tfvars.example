@@ -1,0 +1,17 @@
+# Google Cloud Platform設定
+project_id = "YOUR_PROJECT_ID"
+region     = "asia-northeast1"
+
+# アプリケーション設定
+app_name    = "gameday-console"
+environment = "prod"
+
+# GitHub設定
+github_repo   = "ma-fukuda-sk/Google_Cloud_Game_Day"
+github_branch = "main"
+
+# Cloud Run設定
+cloud_run_cpu          = "1000m"
+cloud_run_memory       = "512Mi"
+cloud_run_min_instances = 0
+cloud_run_max_instances = 10

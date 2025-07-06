@@ -1,0 +1,113 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: asia-northeast1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run type check
+        run: npx tsc --noEmit
+
+      # TODO: Add unit tests when available
+      # - name: Run tests
+      #   run: npm test
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker ${REGION}-docker.pkg.dev
+
+      - name: Trigger Cloud Build
+        run: |
+          gcloud builds submit \
+            --config cloudbuild.yaml \
+            --substitutions _REGION=${REGION},_SERVICE_NAME=gameday-console-prod,_DOCKER_REPO=gameday-console-docker,_ENVIRONMENT=prod
+
+      - name: Get Cloud Run URL
+        id: deploy
+        run: |
+          URL=$(gcloud run services describe gameday-console-prod --region=${REGION} --format='value(status.url)')
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+
+      - name: Show deployment result
+        run: |
+          echo "🚀 Deployment successful!"
+          echo "🌐 Application URL: ${{ steps.deploy.outputs.url }}"
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker ${REGION}-docker.pkg.dev
+
+      - name: Trigger Cloud Build for Staging
+        run: |
+          gcloud builds submit \
+            --config cloudbuild.yaml \
+            --substitutions _REGION=${REGION},_SERVICE_NAME=gameday-console-staging,_DOCKER_REPO=gameday-console-docker,_ENVIRONMENT=staging
