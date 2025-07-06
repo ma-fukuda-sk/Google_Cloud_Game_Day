@@ -5,9 +5,10 @@ on:
     branches:
       - main
       - develop
-  pull_request:
-    branches:
-      - main
+  # Temporarily disabled for initial setup
+  # pull_request:
+  #   branches:
+  #     - main
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
