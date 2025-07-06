@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // テストモード（一時的）- 認証されたユーザーは全てのドキュメントにアクセス可能
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
