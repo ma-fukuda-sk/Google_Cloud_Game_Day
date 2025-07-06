@@ -256,9 +256,13 @@ export default function NewScenarioPage() {
           {Object.keys(errors).length > 0 && (
             <div className="rounded-md bg-yellow-50 p-4">
               <h3 className="text-sm font-medium text-yellow-800 mb-2">フォームエラー:</h3>
-              <pre className="text-xs text-yellow-700 whitespace-pre-wrap">
-                {JSON.stringify(errors, null, 2)}
-              </pre>
+              <ul className="text-xs text-yellow-700 space-y-1">
+                {Object.entries(errors).map(([field, error]) => (
+                  <li key={field}>
+                    <strong>{field}:</strong> {error?.message || 'エラーが発生しました'}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 
